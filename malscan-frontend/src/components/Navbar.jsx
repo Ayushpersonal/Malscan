@@ -48,9 +48,7 @@ export const Navbar = () => {
       {/* SideNavBar Shell */}
       <aside className="bg-surface-dim dark:bg-surface-dim h-full w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant flex flex-col py-margin-desktop z-[60]">
         <div className="px-6 mb-10 flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary-fixed-dim rounded flex items-center justify-center">
-            <span className="material-symbols-outlined text-on-primary-fixed font-semibold" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
-          </div>
+          <img src="/logo.png" alt="MalScan Logo" className="w-8 h-8 object-contain" />
           <div>
             <h1 className="text-title-md font-title-md font-bold text-primary dark:text-primary">MalScan</h1>
             <p className="text-[10px] uppercase tracking-widest text-on-surface-variant font-label-code">Threat Intelligence</p>

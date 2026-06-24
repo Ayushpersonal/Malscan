@@ -97,6 +97,7 @@ function AppContent() {
       </main>
       <footer className="flex justify-between items-center px-margin-desktop ml-64 max-w-[calc(100%-16rem)] bg-surface-container-lowest dark:bg-surface-container-lowest w-full py-4 border-t border-outline-variant">
         <div className="flex items-center gap-4">
+          <img src="/logo.png" alt="MalScan Logo" className="w-5 h-5 object-contain" />
           <span className="font-label-code text-primary">MALSCAN v2.4.0</span>
           <span className="text-on-surface-variant font-label-code text-label-code opacity-50">© 2026 MalScan Defensive Intelligence</span>
         </div>

@@ -25,9 +25,7 @@ export const Landing = () => {
       {/* Top Header Navigation */}
       <header className="flex justify-between items-center h-16 px-margin-desktop w-full fixed top-0 z-50 bg-surface-dim/85 backdrop-blur-md border-b border-outline-variant">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
-          <div className="w-8 h-8 bg-primary-fixed-dim rounded flex items-center justify-center">
-            <span className="material-symbols-outlined text-on-primary-fixed text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
-          </div>
+          <img src="/logo.png" alt="MalScan Logo" className="w-8 h-8 object-contain" />
           <span className="font-title-md text-title-md font-bold text-primary tracking-tight">MalScan</span>
         </div>
 
@@ -249,9 +247,7 @@ export const Landing = () => {
       <footer className="w-full py-12 bg-surface-container-lowest border-t border-outline-variant relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-center px-margin-desktop gap-8">
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 bg-outline-variant/20 rounded flex items-center justify-center">
-              <span className="material-symbols-outlined text-outline text-[16px]">shield</span>
-            </div>
+            <img src="/logo.png" alt="MalScan Logo" className="w-6 h-6 object-contain" />
             <span className="font-label-code text-primary text-xs font-semibold">MalScan Defensive Intelligence</span>
           </div>
           <div className="flex gap-8">
