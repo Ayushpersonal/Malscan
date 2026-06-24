@@ -1,0 +1,485 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>MalScan | Threat Intelligence Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "status-benign": "#00FF94",
+                    "surface": "#131314",
+                    "primary-fixed": "#7df4ff",
+                    "tertiary": "#fff5de",
+                    "surface-container-high": "#2a2a2b",
+                    "surface-container-highest": "#353436",
+                    "secondary-fixed-dim": "#adc7ff",
+                    "primary": "#dbfcff",
+                    "surface-container": "#201f20",
+                    "secondary": "#adc7ff",
+                    "on-secondary-fixed-variant": "#004493",
+                    "surface-dim": "#131314",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed-variant": "#554500",
+                    "on-tertiary-container": "#715d00",
+                    "surface-charcoal": "#121214",
+                    "status-malware": "#FF3B3B",
+                    "on-tertiary-fixed": "#231b00",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-container": "#fed639",
+                    "surface-tint": "#00dbe9",
+                    "inverse-surface": "#e5e2e3",
+                    "surface-container-lowest": "#0e0e0f",
+                    "surface-elevated": "#1C1C1F",
+                    "surface-bright": "#3a393a",
+                    "electric-blue": "#2E74FF",
+                    "on-background": "#e5e2e3",
+                    "primary-fixed-dim": "#00dbe9",
+                    "tertiary-fixed-dim": "#eac324",
+                    "on-secondary": "#002e68",
+                    "error-container": "#93000a",
+                    "on-primary": "#00363a",
+                    "status-medium": "#FFC700",
+                    "inverse-on-surface": "#313031",
+                    "on-secondary-fixed": "#001a41",
+                    "on-secondary-container": "#00285b",
+                    "surface-variant": "#353436",
+                    "inverse-primary": "#006970",
+                    "on-primary-fixed-variant": "#004f54",
+                    "secondary-fixed": "#d8e2ff",
+                    "tertiary-fixed": "#ffe179",
+                    "primary-container": "#00f0ff",
+                    "outline": "#849495",
+                    "outline-variant": "#3b494b",
+                    "on-surface-variant": "#b9cacb",
+                    "teal-accent": "#00CED1",
+                    "on-primary-container": "#006970",
+                    "surface-container-low": "#1c1b1c",
+                    "on-error": "#690005",
+                    "on-primary-fixed": "#002022",
+                    "secondary-container": "#4a8eff",
+                    "background": "#131314",
+                    "on-tertiary": "#3b2f00",
+                    "on-surface": "#e5e2e3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "margin-desktop": "32px",
+                    "container-max": "1440px",
+                    "unit": "4px"
+            },
+            "fontFamily": {
+                    "title-md": ["Montserrat"],
+                    "display-lg": ["Montserrat"],
+                    "headline-lg": ["Montserrat"],
+                    "body-lg": ["Inter"],
+                    "headline-lg-mobile": ["Montserrat"],
+                    "body-md": ["Inter"],
+                    "label-code": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-code": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0A0A0B;
+            color: #e5e2e3;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(0, 219, 233, 0.15);
+        }
+        .scanline-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        .scanline-effect::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 219, 233, 0.1);
+            animation: scanline 4s linear infinite;
+        }
+        @keyframes scanline {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: auto auto;
+            gap: 24px;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary-fixed-dim selection:text-on-primary-fixed">
+<!-- SideNavBar Shell -->
+<aside class="bg-surface-dim dark:bg-surface-dim h-full w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant flex flex-col py-margin-desktop z-50">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary-fixed-dim rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-fixed" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<div>
+<h1 class="text-title-md font-title-md font-bold text-primary dark:text-primary">MalScan</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-label-code">Threat Intelligence</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-primary-fixed-dim font-bold border-r-2 border-primary-fixed-dim bg-surface-container-high transition-colors duration-200 Active: scale-[0.98] transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 Active: scale-[0.98] transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">upload_file</span>
+<span class="">Scan File</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 Active: scale-[0.98] transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="">Scan History</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 Active: scale-[0.98] transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="">Profile</span>
+</a>
+</nav>
+<div class="mt-auto px-4 pt-4 border-t border-outline-variant space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="">Support</span>
+</a>
+<button class="w-full flex items-center gap-3 px-4 py-3 mt-4 text-error hover:bg-error-container/10 transition-colors duration-200 rounded">
+<span class="material-symbols-outlined">logout</span>
+<span class="">Logout</span>
+</button>
+</div>
+</aside>
+<!-- TopNavBar Shell -->
+<header class="flex justify-between items-center h-16 px-margin-desktop w-full ml-64 max-w-[calc(100%-16rem)] bg-surface-dim/80 dark:bg-surface-dim/80 backdrop-blur-md docked full-width top-0 sticky z-40 border-b border-outline-variant dark:border-outline-variant">
+<div class="flex items-center flex-1 max-w-xl">
+<div class="relative w-full group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary-fixed-dim">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg py-2 pl-10 pr-4 font-body-md text-on-surface focus:outline-none focus:ring-1 focus:ring-primary-fixed-dim transition-all" placeholder="Search threats, hash, or file names..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary-fixed transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-status-malware rounded-full border border-surface-dim"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary-fixed transition-colors">
+<span class="material-symbols-outlined">shield</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary-fixed transition-colors">
+<span class="material-symbols-outlined">sync</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="font-body-md font-bold text-on-surface">User name<div><br></div></p>
+<p class="text-[10px] text-status-benign flex items-center justify-end gap-1">
+<span class="w-1.5 h-1.5 bg-status-benign rounded-full"></span> SYSTEM SECURE
+                    </p>
+</div>
+
+</div>
+</div>
+</header>
+<!-- Main Content Stage -->
+<main class="ml-64 p-margin-desktop min-h-screen">
+<!-- Welcome Header -->
+<div class="mb-8 flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Security Overview</h2>
+<p class="text-on-surface-variant mt-1">Real-time threat monitoring and defensive analysis</p>
+</div>
+<div class="flex gap-4">
+<button class="bg-surface-elevated border border-outline-variant px-4 py-2 flex items-center gap-2 hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="font-label-code">Last 24 Hours</span>
+</button>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 font-bold flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all glow-cyan">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                    RUN FULL SYSTEM SCAN
+                </button>
+</div>
+</div>
+<!-- KPI Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<!-- Total Scans -->
+<div class="bg-surface-elevated border border-outline-variant p-6 rounded-lg scanline-effect group hover:border-primary-fixed-dim transition-all">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 bg-surface-container-highest flex items-center justify-center rounded">
+<span class="material-symbols-outlined text-primary-fixed-dim">analytics</span>
+</div>
+<span class="text-status-benign text-label-code">+12.5%</span>
+</div>
+<p class="text-on-surface-variant font-label-code text-label-code uppercase tracking-widest">Total Scans</p>
+<h3 class="text-headline-lg font-headline-lg text-primary mt-1">08:58:46</h3>
+</div>
+<!-- Malware Detected -->
+<div class="bg-surface-elevated border border-outline-variant p-6 rounded-lg group hover:border-status-malware transition-all">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 bg-status-malware/10 flex items-center justify-center rounded">
+<span class="material-symbols-outlined text-status-malware" style="font-variation-settings: 'FILL' 1;">security_update_warning</span>
+</div>
+<span class="text-status-malware text-label-code">+2 Incidents</span>
+</div>
+<p class="text-on-surface-variant font-label-code text-label-code uppercase tracking-widest">Malware Detected</p>
+<h3 class="text-headline-lg font-headline-lg text-status-malware mt-1">14</h3>
+</div>
+<!-- Benign Files -->
+<div class="bg-surface-elevated border border-outline-variant p-6 rounded-lg group hover:border-status-benign transition-all">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 bg-status-benign/10 flex items-center justify-center rounded">
+<span class="material-symbols-outlined text-status-benign">verified_user</span>
+</div>
+<span class="text-status-benign text-label-code">99.2% Rate</span>
+</div>
+<p class="text-on-surface-variant font-label-code text-label-code uppercase tracking-widest">Benign Files</p>
+<h3 class="text-headline-lg font-headline-lg text-status-benign mt-1">1,270</h3>
+</div>
+<!-- Last Scan Time -->
+<div class="bg-surface-elevated border border-outline-variant p-6 rounded-lg group hover:border-primary-fixed-dim transition-all">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 bg-surface-container-highest flex items-center justify-center rounded">
+<span class="material-symbols-outlined text-primary-fixed-dim">schedule</span>
+</div>
+<span class="text-on-surface-variant text-label-code">4m ago</span>
+</div>
+<p class="text-on-surface-variant font-label-code text-label-code uppercase tracking-widest">Last Scan Time</p>
+<h3 class="text-headline-lg font-headline-lg text-primary mt-1">14:22:05</h3>
+</div>
+</div>
+<!-- Analytical Bento Section -->
+<div class="grid grid-cols-12 gap-6 mb-8">
+<!-- Scan Trend Graph -->
+<div class="col-span-12 lg:col-span-8 bg-surface-elevated border border-outline-variant p-6 rounded-lg">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h4 class="font-title-md text-title-md text-primary">Scan Volume Trend</h4>
+<p class="text-body-md text-on-surface-variant">Weekly throughput of intelligence processing</p>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container-highest rounded text-label-code">
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim"></span> Scans
+                        </div>
+</div>
+</div>
+<div class="h-64 flex items-end justify-between gap-2 px-2">
+<!-- Mock Graph Bars -->
+<div class="flex-1 bg-primary/10 rounded-t h-[40%] group relative">
+<div class="absolute inset-x-0 bottom-0 bg-primary-fixed-dim rounded-t h-[60%] group-hover:h-full transition-all duration-500"></div>
+<span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-on-surface-variant font-label-code">MON</span>
+</div>
+<div class="flex-1 bg-primary/10 rounded-t h-[60%] group relative">
+<div class="absolute inset-x-0 bottom-0 bg-primary-fixed-dim rounded-t h-[70%] group-hover:h-full transition-all duration-500"></div>
+<span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-on-surface-variant font-label-code">TUE</span>
+</div>
+<div class="flex-1 bg-primary/10 rounded-t h-[30%] group relative">
+<div class="absolute inset-x-0 bottom-0 bg-primary-fixed-dim rounded-t h-[40%] group-hover:h-full transition-all duration-500"></div>
+<span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-on-surface-variant font-label-code">WED</span>
+</div>
+<div class="flex-1 bg-primary/10 rounded-t h-[80%] group relative">
+<div class="absolute inset-x-0 bottom-0 bg-primary-fixed-dim rounded-t h-[85%] group-hover:h-full transition-all duration-500"></div>
+<span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-on-surface-variant font-label-code">THU</span>
+</div>
+<div class="flex-1 bg-primary/10 rounded-t h-[55%] group relative">
+<div class="absolute inset-x-0 bottom-0 bg-primary-fixed-dim rounded-t h-[65%] group-hover:h-full transition-all duration-500"></div>
+<span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-on-surface-variant font-label-code">FRI</span>
+</div>
+<div class="flex-1 bg-primary/10 rounded-t h-[20%] group relative">
+<div class="absolute inset-x-0 bottom-0 bg-primary-fixed-dim rounded-t h-[50%] group-hover:h-full transition-all duration-500"></div>
+<span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-on-surface-variant font-label-code">SAT</span>
+</div>
+<div class="flex-1 bg-primary/10 rounded-t h-[35%] group relative">
+<div class="absolute inset-x-0 bottom-0 bg-primary-fixed-dim rounded-t h-[45%] group-hover:h-full transition-all duration-500"></div>
+<span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-on-surface-variant font-label-code">SUN</span>
+</div>
+</div>
+</div>
+<!-- Distribution Pie -->
+<div class="col-span-12 lg:col-span-4 bg-surface-elevated border border-outline-variant p-6 rounded-lg">
+<h4 class="font-title-md text-title-md text-primary mb-2">Threat Ratio</h4>
+<p class="text-body-md text-on-surface-variant mb-6">Distribution of file classifications</p>
+<div class="relative w-48 h-48 mx-auto flex items-center justify-center">
+<!-- Dynamic Pie Graphic -->
+<svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+<circle cx="18" cy="18" fill="transparent" r="16" stroke="#262629" stroke-width="3"></circle>
+<circle cx="18" cy="18" fill="transparent" r="16" stroke="#00FF94" stroke-dasharray="90, 100" stroke-width="3"></circle>
+<circle cx="18" cy="18" fill="transparent" r="16" stroke="#FF3B3B" stroke-dasharray="10, 100" stroke-dashoffset="-90" stroke-width="3"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="font-headline-lg text-headline-lg text-primary">99%</span>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-widest font-label-code">Safe</span>
+</div>
+</div>
+<div class="mt-8 space-y-3">
+<div class="flex justify-between items-center text-label-code">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-status-benign"></span>
+<span class="text-on-surface">Benign Files</span>
+</div>
+<span class="text-primary">1,270</span>
+</div>
+<div class="flex justify-between items-center text-label-code">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-status-malware"></span>
+<span class="text-on-surface">Malicious</span>
+</div>
+<span class="text-primary">14</span>
+</div>
+<div class="flex justify-between items-center text-label-code opacity-50">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-status-medium"></span>
+<span class="text-on-surface">Suspicious</span>
+</div>
+<span class="text-primary">0</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Table -->
+<div class="bg-surface-elevated border border-outline-variant rounded-lg overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center">
+<h4 class="font-title-md text-title-md text-primary">Live Scan Activity</h4>
+<button class="text-primary-fixed-dim hover:underline text-label-code flex items-center gap-1">
+                    VIEW ALL HISTORY <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container font-label-code text-on-surface-variant text-[11px] uppercase tracking-wider">
+<tr>
+<th class="px-6 py-4">File Name</th>
+<th class="px-6 py-4">Threat Level</th>
+<th class="px-6 py-4">Source Hash</th>
+<th class="px-6 py-4">Timestamp</th>
+<th class="px-6 py-4">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant font-body-md text-on-surface">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-fixed-dim">description</span>
+<span class="font-bold">update_patch_x64.exe</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 bg-status-benign/10 text-status-benign border border-status-benign/20 rounded-sm text-label-code text-[10px]">BENIGN</span>
+</td>
+<td class="px-6 py-4 font-label-code text-[12px] text-on-surface-variant">0x7f3...a9b2</td>
+<td class="px-6 py-4 text-on-surface-variant">2 mins ago</td>
+<td class="px-6 py-4">
+<button class="p-1 hover:bg-surface-container-highest rounded text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 flex items-center gap-3">
+<span class="material-symbols-outlined text-status-malware">warning</span>
+<span class="font-bold">cryptowall_v4_payload.msi</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 bg-status-malware/10 text-status-malware border border-status-malware/20 rounded-sm text-label-code text-[10px]">MALWARE</span>
+</td>
+<td class="px-6 py-4 font-label-code text-[12px] text-on-surface-variant">0x1a2...f34c</td>
+<td class="px-6 py-4 text-on-surface-variant">15 mins ago</td>
+<td class="px-6 py-4">
+<button class="p-1 hover:bg-surface-container-highest rounded text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-fixed-dim">description</span>
+<span class="font-bold">invoice_49102.pdf</span>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 bg-status-benign/10 text-status-benign border border-status-benign/20 rounded-sm text-label-code text-[10px]">BENIGN</span>
+</td>
+<td class="px-6 py-4 font-label-code text-[12px] text-on-surface-variant">0x9e1...bb22</td>
+<td class="px-6 py-4 text-on-surface-variant">1 hour ago</td>
+<td class="px-6 py-4">
+<button class="p-1 hover:bg-surface-container-highest rounded text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+<!-- Footer Shell -->
+<footer class="flex justify-between items-center px-margin-desktop ml-64 max-w-[calc(100%-16rem)] w-full py-4 bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-outline-variant">
+<p class="font-label-code text-label-code text-on-surface-variant dark:text-on-surface-variant">© 2024 MalScan Defensive Intelligence</p>
+<div class="flex gap-8">
+<a class="font-label-code text-label-code text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-code text-label-code text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-code text-label-code text-on-surface-variant hover:text-primary transition-colors" href="#">Security Disclosure</a>
+</div>
+</footer>
+<script>
+        // Micro-interaction for bar highlights
+        document.querySelectorAll('.flex-1.bg-primary\\/10').forEach(bar => {
+            bar.addEventListener('mouseenter', () => {
+                bar.classList.add('glow-cyan');
+            });
+            bar.addEventListener('mouseleave', () => {
+                bar.classList.remove('glow-cyan');
+            });
+        });
+
+        // Simulating Live Scan Update
+        setInterval(() => {
+            const lastScanTime = document.querySelector('h3.text-headline-lg.text-primary.mt-1:last-of-type');
+            if (lastScanTime) {
+                const now = new Date();
+                const timeStr = now.toTimeString().split(' ')[0];
+                // Subtle flicker animation on update
+                lastScanTime.classList.add('opacity-50');
+                setTimeout(() => {
+                    lastScanTime.textContent = timeStr;
+                    lastScanTime.classList.remove('opacity-50');
+                }, 150);
+            }
+        }, 1000);
+    </script>
+
+
+</body></html>

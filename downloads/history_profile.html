@@ -1,0 +1,541 @@
+<!DOCTYPE html><html class="dark" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>MalScan | Threat Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=JetBrains+Mono:wght@100..900&amp;family=Montserrat:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanline-hover:hover {
+            position: relative;
+            overflow: hidden;
+        }
+        .scanline-hover:hover::after {
+            content: "";
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(0, 219, 233, 0.1), transparent);
+            animation: scanline 1.5s infinite linear;
+            pointer-events: none;
+        }
+        @keyframes scanline {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+        .glitch-text:hover {
+            text-shadow: 2px 0 #FF3B3B, -2px 0 #00FF94;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A0A0B;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #262629;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b494b;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "status-benign": "#00FF94",
+                      "surface": "#131314",
+                      "primary-fixed": "#7df4ff",
+                      "tertiary": "#fff5de",
+                      "surface-container-high": "#2a2a2b",
+                      "surface-container-highest": "#353436",
+                      "secondary-fixed-dim": "#adc7ff",
+                      "primary": "#dbfcff",
+                      "surface-container": "#201f20",
+                      "secondary": "#adc7ff",
+                      "on-secondary-fixed-variant": "#004493",
+                      "surface-dim": "#131314",
+                      "error": "#ffb4ab",
+                      "on-tertiary-fixed-variant": "#554500",
+                      "on-tertiary-container": "#715d00",
+                      "surface-charcoal": "#121214",
+                      "status-malware": "#FF3B3B",
+                      "on-tertiary-fixed": "#231b00",
+                      "on-error-container": "#ffdad6",
+                      "tertiary-container": "#fed639",
+                      "surface-tint": "#00dbe9",
+                      "inverse-surface": "#e5e2e3",
+                      "surface-container-lowest": "#0e0e0f",
+                      "surface-elevated": "#1C1C1F",
+                      "surface-bright": "#3a393a",
+                      "electric-blue": "#2E74FF",
+                      "on-background": "#e5e2e3",
+                      "primary-fixed-dim": "#00dbe9",
+                      "tertiary-fixed-dim": "#eac324",
+                      "on-secondary": "#002e68",
+                      "error-container": "#93000a",
+                      "on-primary": "#00363a",
+                      "status-medium": "#FFC700",
+                      "inverse-on-surface": "#313031",
+                      "on-secondary-fixed": "#001a41",
+                      "on-secondary-container": "#00285b",
+                      "surface-variant": "#353436",
+                      "inverse-primary": "#006970",
+                      "on-primary-fixed-variant": "#004f54",
+                      "secondary-fixed": "#d8e2ff",
+                      "tertiary-fixed": "#ffe179",
+                      "primary-container": "#00f0ff",
+                      "outline": "#849495",
+                      "outline-variant": "#3b494b",
+                      "on-surface-variant": "#b9cacb",
+                      "teal-accent": "#00CED1",
+                      "on-primary-container": "#006970",
+                      "surface-container-low": "#1c1b1c",
+                      "on-error": "#690005",
+                      "on-primary-fixed": "#002022",
+                      "secondary-container": "#4a8eff",
+                      "background": "#131314",
+                      "on-tertiary": "#3b2f00",
+                      "on-surface": "#e5e2e3"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "margin-desktop": "32px",
+                      "container-max": "1440px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "title-md": ["Montserrat"],
+                      "display-lg": ["Montserrat"],
+                      "headline-lg": ["Montserrat"],
+                      "body-lg": ["Inter"],
+                      "headline-lg-mobile": ["Montserrat"],
+                      "body-md": ["Inter"],
+                      "label-code": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-code": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-fixed-dim selection:text-on-primary-fixed overflow-x-hidden">
+<!-- SIDE NAVIGATION BAR -->
+<aside class="bg-surface-dim dark:bg-surface-dim font-body-md text-body-md h-full w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline-variant flex flex-col py-margin-desktop z-[60]">
+<div class="px-6 mb-10">
+<h1 class="text-title-md font-title-md font-bold text-primary dark:text-primary tracking-tight glitch-text cursor-default">MalScan</h1>
+<p class="font-label-code text-label-code text-on-surface-variant uppercase tracking-[0.2em]">Threat Intelligence</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="group flex items-center px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 Active: scale-[0.98] transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mr-3 group-hover:text-primary">dashboard</span>
+                Dashboard
+            </a>
+<a class="group flex items-center px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 Active: scale-[0.98] transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mr-3 group-hover:text-primary">upload_file</span>
+                Scan File
+            </a>
+<a class="group flex items-center px-6 py-3 text-primary-fixed-dim font-bold border-r-2 border-primary-fixed-dim bg-surface-container-high transition-colors duration-200 Active: scale-[0.98] transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mr-3">history</span>
+                Scan History
+            </a>
+<a class="group flex items-center px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 Active: scale-[0.98] transition-transform duration-150" href="#" onclick="togglePage('profile')">
+<span class="material-symbols-outlined mr-3 group-hover:text-primary">person</span>
+                Profile
+            </a>
+</nav>
+<div class="mt-auto px-6 space-y-1">
+<a class="group flex items-center py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+                Settings
+            </a>
+<a class="group flex items-center py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3">help</span>
+                Support
+            </a>
+<button class="w-full mt-6 flex items-center justify-center gap-2 py-3 bg-error-container text-on-error-container font-bold rounded-lg hover:bg-error transition-all scanline-hover">
+<span class="material-symbols-outlined">logout</span>
+                Logout
+            </button>
+</div>
+</aside>
+<!-- TOP NAV BAR -->
+<header class="bg-surface-dim/80 dark:bg-surface-dim/80 backdrop-blur-md text-primary dark:text-primary font-body-md text-body-md docked full-width top-0 sticky z-50 border-b border-outline-variant dark:border-outline-variant flex justify-between items-center h-16 px-margin-desktop w-full ml-64 max-w-[calc(100%-16rem)]">
+<div class="flex items-center w-full max-w-xl bg-surface-container rounded-lg px-4 py-1.5 focus-within:ring-1 focus-within:ring-primary-fixed-dim transition-all">
+<span class="material-symbols-outlined text-on-surface-variant mr-3">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-md w-full placeholder:text-on-surface-variant/50" placeholder="Search hash, filename, or threat ID..." type="text">
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-status-malware rounded-full border border-surface"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">shield</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">sync</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant">
+<div class="text-right">
+<p class="text-body-md font-bold text-on-surface leading-none">user name</p>
+<p class="text-label-code text-on-surface-variant">L3 Analyst</p>
+</div>
+<div class="w-10 h-10 rounded-lg overflow-hidden border border-outline-variant">
+
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN CONTENT AREA -->
+<main class="ml-64 p-margin-desktop min-h-screen">
+<!-- SCAN HISTORY PAGE -->
+<section class="space-y-8 animate-in fade-in duration-500" id="scan-history-page">
+<div class="flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Scan History</h2>
+<p class="text-on-surface-variant mt-1">Reviewing 1,402 processed intelligence units</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors rounded-lg">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+                        Filters
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary-fixed-dim text-on-primary-fixed font-bold rounded-lg scanline-hover transition-all">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                        Export Logs
+                    </button>
+</div>
+</div>
+<!-- DASHBOARD BENTO SUMMARY -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="bg-surface-elevated border border-outline-variant p-6 rounded-xl flex flex-col justify-between">
+<span class="text-label-code text-on-surface-variant uppercase tracking-wider">Total Scans</span>
+<p class="text-headline-lg font-title-md mt-2">1,402</p>
+<div class="mt-4 flex items-center text-status-benign text-label-code">
+<span class="material-symbols-outlined text-[16px] mr-1">trending_up</span>
+                        +12% from last month
+                    </div>
+</div>
+<div class="bg-surface-elevated border border-outline-variant p-6 rounded-xl flex flex-col justify-between">
+<span class="text-label-code text-on-surface-variant uppercase tracking-wider">Malware Detected</span>
+<p class="text-headline-lg font-title-md mt-2 text-status-malware">42</p>
+<div class="mt-4 flex items-center text-status-malware text-label-code">
+<span class="material-symbols-outlined text-[16px] mr-1">warning</span>
+                        3 critical threats active
+                    </div>
+</div>
+<div class="bg-surface-elevated border border-outline-variant p-6 rounded-xl md:col-span-2 relative overflow-hidden">
+<div class="relative z-10">
+<span class="text-label-code text-on-surface-variant uppercase tracking-wider">Processing Efficiency</span>
+<p class="text-headline-lg font-title-md mt-2">99.98<span class="text-primary-fixed-dim">%</span></p>
+<p class="text-body-md text-on-surface-variant mt-2 max-w-[200px]">Real-time cloud analysis engine performing at peak capacity.</p>
+</div>
+<div class="absolute right-[-20px] bottom-[-20px] opacity-20">
+<span class="material-symbols-outlined text-[120px] text-primary">analytics</span>
+</div>
+</div>
+</div>
+<!-- SCAN HISTORY LIST (CARDS) -->
+<div class="space-y-4">
+<!-- HISTORY CARD 1 -->
+<div class="group bg-surface-charcoal border border-outline-variant hover:border-primary-fixed-dim transition-all duration-300 p-4 rounded-xl flex flex-col md:flex-row md:items-center gap-6 relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-status-malware"></div>
+<div class="flex-shrink-0 w-12 h-12 bg-surface-container-high rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-status-malware">dangerous</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-bold text-on-surface truncate">security_patch_v2.exe</h4>
+<p class="font-label-code text-label-code text-on-surface-variant">SHA256: 4e67...a3f9</p>
+</div>
+<div class="flex flex-col">
+<span class="text-label-code text-on-surface-variant uppercase">Prediction</span>
+<span class="text-status-malware font-bold">Malicious (Trojan)</span>
+</div>
+<div class="flex flex-col min-w-[120px]">
+<span class="text-label-code text-on-surface-variant uppercase">Confidence</span>
+<div class="flex items-center gap-2">
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-status-malware h-full w-[94%]"></div>
+</div>
+<span class="font-label-code text-on-surface">94%</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-code text-on-surface-variant uppercase">Analyzed At</span>
+<span class="text-on-surface">Oct 24, 2024 · 14:32:01</span>
+</div>
+<div class="ml-auto">
+<button class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- HISTORY CARD 2 -->
+<div class="group bg-surface-charcoal border border-outline-variant hover:border-primary-fixed-dim transition-all duration-300 p-4 rounded-xl flex flex-col md:flex-row md:items-center gap-6 relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-status-benign"></div>
+<div class="flex-shrink-0 w-12 h-12 bg-surface-container-high rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-status-benign">verified_user</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-bold text-on-surface truncate">invoice_oct_772.pdf</h4>
+<p class="font-label-code text-label-code text-on-surface-variant">SHA256: 8b12...c2d1</p>
+</div>
+<div class="flex flex-col">
+<span class="text-label-code text-on-surface-variant uppercase">Prediction</span>
+<span class="text-status-benign font-bold">Clean / Benign</span>
+</div>
+<div class="flex flex-col min-w-[120px]">
+<span class="text-label-code text-on-surface-variant uppercase">Confidence</span>
+<div class="flex items-center gap-2">
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-status-benign h-full w-[99%]"></div>
+</div>
+<span class="font-label-code text-on-surface">99%</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-code text-on-surface-variant uppercase">Analyzed At</span>
+<span class="text-on-surface">Oct 24, 2024 · 13:15:44</span>
+</div>
+<div class="ml-auto">
+<button class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- HISTORY CARD 3 -->
+<div class="group bg-surface-charcoal border border-outline-variant hover:border-primary-fixed-dim transition-all duration-300 p-4 rounded-xl flex flex-col md:flex-row md:items-center gap-6 relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-status-medium"></div>
+<div class="flex-shrink-0 w-12 h-12 bg-surface-container-high rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-status-medium">warning</span>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="font-bold text-on-surface truncate">internal_tool.zip</h4>
+<p class="font-label-code text-label-code text-on-surface-variant">SHA256: 1f99...dd42</p>
+</div>
+<div class="flex flex-col">
+<span class="text-label-code text-on-surface-variant uppercase">Prediction</span>
+<span class="text-status-medium font-bold">Suspicious (Adware)</span>
+</div>
+<div class="flex flex-col min-w-[120px]">
+<span class="text-label-code text-on-surface-variant uppercase">Confidence</span>
+<div class="flex items-center gap-2">
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-status-medium h-full w-[67%]"></div>
+</div>
+<span class="font-label-code text-on-surface">67%</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-code text-on-surface-variant uppercase">Analyzed At</span>
+<span class="text-on-surface">Oct 24, 2024 · 11:02:18</span>
+</div>
+<div class="ml-auto">
+<button class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- PAGINATION -->
+<div class="flex justify-between items-center pt-6 border-t border-outline-variant">
+<span class="text-label-code text-on-surface-variant">Showing 1-10 of 1,402 records</span>
+<div class="flex gap-2">
+<button class="p-2 border border-outline-variant rounded hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">first_page</span>
+</button>
+<button class="px-4 py-1 bg-surface-container-highest text-primary-fixed-dim font-bold border border-primary-fixed-dim rounded">1</button>
+<button class="px-4 py-1 border border-outline-variant rounded hover:bg-surface-container-high transition-colors">2</button>
+<button class="px-4 py-1 border border-outline-variant rounded hover:bg-surface-container-high transition-colors">3</button>
+<button class="p-2 border border-outline-variant rounded hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">last_page</span>
+</button>
+</div>
+</div>
+</section>
+<!-- PROFILE PAGE (Hidden by default) -->
+<section class="hidden space-y-8 animate-in slide-in-from-bottom-4 duration-500" id="profile-page">
+<h2 class="font-headline-lg text-headline-lg text-primary tracking-tight">Security Analyst Profile</h2>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- USER INFO CARD -->
+<div class="lg:col-span-1 space-y-6">
+<div class="bg-surface-elevated border border-outline-variant rounded-xl overflow-hidden">
+<div class="h-32 relative">
+
+<div class="absolute inset-0 bg-gradient-to-t from-surface-elevated to-transparent"></div>
+</div>
+<div class="px-6 pb-6 -mt-12 relative z-10 text-center">
+<div class="w-24 h-24 rounded-2xl mx-auto border-4 border-surface-elevated overflow-hidden mb-4 shadow-xl">
+<img class="w-full h-full object-cover" data-alt="A futuristic headshot of a female security analyst wearing a high-tech tactical headset. She is looking directly at the camera with a confident expression. Neon cyan and deep purple rim lighting accentuate her profile against a dark, tech-filled office background. The aesthetic is clean, professional, and slightly cyberpunk." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRsny0GzJx_22QsfyV2wZmvdm--rHVwZvDpuNFSJxIg1oRUOL7PIqjUI31TnSJ-kyttEmlEb6ng9abX6fylWWbtwfirpkfBQ7D_RvVaxIumgKo1Vb1aFMsOn1r7VLQ9A3xXHg9UNrrhZzdwJKc_lKlDjJLyag-4zYtLhchzvZ3MUXzznAmfiDK-9RKPbr_nXHIAnMdIszXDmaxABoUqxCMnILMOnGenKzPuZYSGIfTAsEZqHQvOZXlpbCv1DqkBmeJBlTPJaYDpb0">
+</div>
+<h3 class="font-title-md text-title-md text-on-surface">Aria Sterling</h3>
+<p class="text-on-surface-variant font-label-code">Level 3 Cyber Security Lead</p>
+<div class="mt-4 flex justify-center gap-2">
+<span class="px-3 py-1 bg-primary-fixed-dim/10 text-primary-fixed-dim rounded-full text-label-code border border-primary-fixed-dim/20">ADMIN</span>
+<span class="px-3 py-1 bg-teal-accent/10 text-teal-accent rounded-full text-label-code border border-teal-accent/20">SOC-OPS</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-elevated border border-outline-variant rounded-xl p-6">
+<h4 class="font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed-dim">verified</span>
+                            Certification Status
+                        </h4>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant">CISSP Professional</span>
+<span class="text-status-benign text-label-code font-bold">ACTIVE</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant">GIAC Mal. Analysis</span>
+<span class="text-status-benign text-label-code font-bold">ACTIVE</span>
+</div>
+<div class="flex items-center justify-between opacity-50">
+<span class="text-on-surface-variant">CompTIA Security+</span>
+<span class="text-on-surface-variant text-label-code">EXPIRED</span>
+</div>
+</div>
+</div>
+</div>
+<!-- EDIT PROFILE / SECURITY SETTINGS -->
+<div class="lg:col-span-2 space-y-gutter">
+<!-- EDIT INFO FORM -->
+<div class="bg-surface-elevated border border-outline-variant rounded-xl p-8">
+<div class="flex justify-between items-center mb-6">
+<h4 class="text-title-md font-title-md text-on-surface">Account Settings</h4>
+<button class="text-primary-fixed-dim font-bold hover:underline transition-all">Save Changes</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-label-code text-on-surface-variant uppercase">Full Name</label>
+<input class="w-full bg-background border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-fixed-dim focus:border-primary-fixed-dim transition-all text-on-surface font-body-md" type="text" value="Aria Sterling">
+</div>
+<div class="space-y-2">
+<label class="text-label-code text-on-surface-variant uppercase">Email Address</label>
+<input class="w-full bg-background border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-fixed-dim focus:border-primary-fixed-dim transition-all text-on-surface font-body-md" type="email" value="a.sterling@malscan.intel">
+</div>
+<div class="space-y-2">
+<label class="text-label-code text-on-surface-variant uppercase">Designation</label>
+<input class="w-full bg-background border border-outline-variant rounded-lg px-4 py-3 focus:ring-1 focus:ring-primary-fixed-dim focus:border-primary-fixed-dim transition-all text-on-surface font-body-md" type="text" value="Lead Threat Analyst">
+</div>
+<div class="space-y-2">
+<label class="text-label-code text-on-surface-variant uppercase">Employee ID</label>
+<input class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-3 text-on-surface-variant font-label-code cursor-not-allowed" disabled="" type="text" value="MS-7742-INT">
+</div>
+</div>
+</div>
+<!-- SECURITY CONTROLS -->
+<div class="bg-surface-elevated border border-outline-variant rounded-xl p-8">
+<h4 class="text-title-md font-title-md text-on-surface mb-6">Security &amp; Authentication</h4>
+<div class="space-y-6">
+<div class="flex items-center justify-between p-4 bg-surface-container rounded-lg border border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-primary-fixed-dim/20 rounded flex items-center justify-center text-primary-fixed-dim">
+<span class="material-symbols-outlined">authenticator</span>
+</div>
+<div>
+<p class="font-bold">Two-Factor Authentication (MFA)</p>
+<p class="text-label-code text-on-surface-variant">Recommended: Authenticator App enabled</p>
+</div>
+</div>
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-status-benign"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container rounded-lg border border-outline-variant">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-electric-blue/20 rounded flex items-center justify-center text-electric-blue">
+<span class="material-symbols-outlined">key</span>
+</div>
+<div>
+<p class="font-bold">Hardware Security Key</p>
+<p class="text-label-code text-on-surface-variant">Yubikey or Titan Security Keys</p>
+</div>
+</div>
+<button class="px-4 py-2 border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors font-bold text-label-code">CONFIGURE</button>
+</div>
+<div class="pt-4 flex flex-col sm:flex-row gap-4">
+<button class="flex-1 px-6 py-3 border border-status-malware text-status-malware font-bold rounded-lg hover:bg-status-malware/10 transition-all text-center">
+                                    Reset Password
+                                </button>
+<button class="flex-1 px-6 py-3 border border-outline-variant text-on-surface-variant font-bold rounded-lg hover:bg-surface-container-high transition-all text-center">
+                                    Logout of All Devices
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- FOOTER -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest text-on-surface-variant dark:text-on-surface-variant font-label-code text-label-code w-full py-4 border-t border-outline-variant flex justify-between items-center px-margin-desktop ml-64 max-w-[calc(100%-16rem)]">
+<div class="">
+<span class="font-label-code text-primary">MalScan</span> © 2024 MalScan Defensive Intelligence
+        </div>
+<div class="flex gap-6">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Security Disclosure</a>
+</div>
+</footer>
+<script>
+        function togglePage(page) {
+            const historyPage = document.getElementById('scan-history-page');
+            const profilePage = document.getElementById('profile-page');
+            const navLinks = document.querySelectorAll('nav a');
+
+            if (page === 'profile') {
+                historyPage.classList.add('hidden');
+                profilePage.classList.remove('hidden');
+                
+                // Update nav highlights
+                navLinks.forEach(link => {
+                    link.classList.remove('text-primary-fixed-dim', 'font-bold', 'border-r-2', 'border-primary-fixed-dim', 'bg-surface-container-high');
+                    link.classList.add('text-on-surface-variant');
+                });
+                navLinks[3].classList.add('text-primary-fixed-dim', 'font-bold', 'border-r-2', 'border-primary-fixed-dim', 'bg-surface-container-high');
+                navLinks[3].classList.remove('text-on-surface-variant');
+            } else {
+                historyPage.classList.remove('hidden');
+                profilePage.classList.add('hidden');
+            }
+        }
+
+        // Interactivity for cards
+        document.querySelectorAll('.group.bg-surface-charcoal').forEach(card => {
+            card.addEventListener('click', () => {
+                card.style.transform = 'scale(0.99)';
+                setTimeout(() => card.style.transform = 'scale(1)', 100);
+            });
+        });
+    </script>
+
+
+</body></html>

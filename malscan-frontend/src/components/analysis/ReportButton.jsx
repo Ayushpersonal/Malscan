@@ -49,33 +49,43 @@ export const ReportButton = ({ scanId, filename }) => {
   };
 
   return (
-    <div className="report-btn-group">
+    <div className="flex gap-4">
       {error && (
-        <div className="report-error font-mono">❌ {error}</div>
+        <div className="text-error font-mono text-xs absolute -bottom-6 left-0">❌ {error}</div>
       )}
       <button
         onClick={handlePdfDownload}
         disabled={pdfLoading || !scanId}
-        className="action-btn report-pdf-btn font-mono"
+        className="px-4 py-2 border border-outline-variant bg-surface-container-low hover:bg-surface-container-high hover:text-primary text-on-surface font-mono text-xs flex items-center gap-2 rounded transition-all duration-200"
       >
         {pdfLoading ? (
-          <span className="report-btn-loading">
-            <span className="btn-spinner"></span>
-            GENERATING PDF...
-          </span>
-        ) : '📄 DOWNLOAD PDF REPORT'}
+          <>
+            <span className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></span>
+            <span>GENERATING PDF...</span>
+          </>
+        ) : (
+          <>
+            <span className="material-symbols-outlined text-[18px]">download</span>
+            <span>PDF Export</span>
+          </>
+        )}
       </button>
       <button
         onClick={handleJsonExport}
         disabled={jsonLoading || !scanId}
-        className="action-btn report-json-btn font-mono"
+        className="px-4 py-2 bg-primary-fixed-dim hover:bg-primary-container text-on-primary-fixed font-bold font-mono text-xs flex items-center gap-2 rounded transition-all duration-200 hover:shadow-[0_0_15px_rgba(0,219,233,0.3)]"
       >
         {jsonLoading ? (
-          <span className="report-btn-loading">
-            <span className="btn-spinner"></span>
-            EXPORTING JSON...
-          </span>
-        ) : '📦 EXPORT RAW JSON'}
+          <>
+            <span className="w-4 h-4 border-2 border-on-primary-fixed/20 border-t-on-primary-fixed rounded-full animate-spin"></span>
+            <span>EXPORTING JSON...</span>
+          </>
+        ) : (
+          <>
+            <span className="material-symbols-outlined text-[18px]">share</span>
+            <span>JSON Export</span>
+          </>
+        )}
       </button>
     </div>
   );

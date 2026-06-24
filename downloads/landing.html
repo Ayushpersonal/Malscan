@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MalScan | Detect Malware Before It Strikes</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(28, 28, 31, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(132, 148, 149, 0.1);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(0, 219, 233, 0.15);
+        }
+        .scanline-hover:hover {
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 219, 233, 0.05) 50%);
+            background-size: 100% 4px;
+        }
+        @keyframes pulse-cyan {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .animate-pulse-cyan {
+            animation: pulse-cyan 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "status-benign": "#00FF94",
+                        "surface": "#131314",
+                        "primary-fixed": "#7df4ff",
+                        "tertiary": "#fff5de",
+                        "surface-container-high": "#2a2a2b",
+                        "surface-container-highest": "#353436",
+                        "secondary-fixed-dim": "#adc7ff",
+                        "primary": "#dbfcff",
+                        "surface-container": "#201f20",
+                        "secondary": "#adc7ff",
+                        "on-secondary-fixed-variant": "#004493",
+                        "surface-dim": "#131314",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed-variant": "#554500",
+                        "on-tertiary-container": "#715d00",
+                        "surface-charcoal": "#121214",
+                        "status-malware": "#FF3B3B",
+                        "on-tertiary-fixed": "#231b00",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-container": "#fed639",
+                        "surface-tint": "#00dbe9",
+                        "inverse-surface": "#e5e2e3",
+                        "surface-container-lowest": "#0e0e0f",
+                        "surface-elevated": "#1C1C1F",
+                        "surface-bright": "#3a393a",
+                        "electric-blue": "#2E74FF",
+                        "on-background": "#e5e2e3",
+                        "primary-fixed-dim": "#00dbe9",
+                        "tertiary-fixed-dim": "#eac324",
+                        "on-secondary": "#002e68",
+                        "error-container": "#93000a",
+                        "on-primary": "#00363a",
+                        "status-medium": "#FFC700",
+                        "inverse-on-surface": "#313031",
+                        "on-secondary-fixed": "#001a41",
+                        "on-secondary-container": "#00285b",
+                        "surface-variant": "#353436",
+                        "inverse-primary": "#006970",
+                        "on-primary-fixed-variant": "#004f54",
+                        "secondary-fixed": "#d8e2ff",
+                        "tertiary-fixed": "#ffe179",
+                        "primary-container": "#00f0ff",
+                        "outline": "#849495",
+                        "outline-variant": "#3b494b",
+                        "on-surface-variant": "#b9cacb",
+                        "teal-accent": "#00CED1",
+                        "on-primary-container": "#006970",
+                        "surface-container-low": "#1c1b1c",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#002022",
+                        "secondary-container": "#4a8eff",
+                        "background": "#131314",
+                        "on-tertiary": "#3b2f00",
+                        "on-surface": "#e5e2e3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "margin-desktop": "32px",
+                        "container-max": "1440px",
+                        "unit": "4px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Montserrat"],
+                        "display-lg": ["Montserrat"],
+                        "headline-lg": ["Montserrat"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Montserrat"],
+                        "body-md": ["Inter"],
+                        "label-code": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-code": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md text-body-md overflow-x-hidden">
+<!-- Global Background Shader -->
+<!-- STITCH_SHADER_START:ANIMATION_3 class="fixed inset-0 w-full h-full opacity-30 pointer-events-none z-0" -->
+<div class="fixed inset-0 w-full h-full opacity-30 pointer-events-none z-0" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_3" style="display:block;width:100%;height:100%"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_3');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+
+varying vec2 v_texCoord;
+
+float grid(vec2 uv, float res) {
+    vec2 grid = fract(uv * res);
+    return 1.0 - smoothstep(0.0, 0.05, min(grid.x, grid.y));
+}
+
+void main() {
+    vec2 uv = v_texCoord;
+    vec3 baseColor = vec3(0.05, 0.07, 0.09); // Deep Charcoal
+    vec3 accentColor = vec3(0.0, 0.94, 1.0); // Electric Teal
+    
+    // Grid lines
+    float g1 = grid(uv + vec2(u_time * 0.01, u_time * 0.01), 10.0) * 0.1;
+    float g2 = grid(uv - vec2(u_time * 0.005, u_time * 0.005), 30.0) * 0.05;
+    
+    // Glowing nodes (random points)
+    float pulse = sin(u_time * 2.0) * 0.5 + 0.5;
+    float nodes = step(0.995, fract(sin(dot(uv * 10.0, vec2(12.9898, 78.233))) * 43758.5453)) * pulse;
+    
+    vec3 finalColor = baseColor + (accentColor * (g1 + g2 + nodes));
+    
+    gl_FragColor = vec4(finalColor, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_3 -->
+<!-- Navigation Shell -->
+<header class="flex justify-between items-center h-16 px-margin-desktop w-full fixed top-0 z-50 bg-surface-dim/80 backdrop-blur-md border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<img alt="MalScan Logo" class="w-8 h-8 rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtQKg3v_hL39YfehUUUx9Ism9AP91_qrCmxNOkvip89KkAFXczzxaN48wGUgiWjO8Wz9lp2FNpep_VfKcL_110m6Y1XcTVSDk116XZ4Ed94jVZLdOOx6GLTs892YNKL74dV6iF5ZATVD5esHqO8bnBEAQonuWzoYmRcA8iSf7fzCzc0Qoedvv-_o8TSbsIbm6iO7rshANLYFmb-aAhDsIJ9NkcQBe9dGDDtorIueVzsL2Nw3H_rds1zRwMBRz66A6yIbBmX0l5NLE"/>
+<span class="font-title-md text-title-md font-bold text-primary tracking-tight">MalScan</span>
+</div>
+<nav class="hidden md:flex gap-8">
+<a class="text-primary font-bold font-body-md text-body-md transition-colors" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Scan File</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Scan History</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Profile</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors" data-icon="shield">shield</span>
+<button class="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-lg font-label-code text-label-code font-bold hover:brightness-110 active:scale-95 transition-all">
+                GET STARTED
+            </button>
+</div>
+</header>
+<main class="relative z-10">
+<!-- Hero Section -->
+<section class="min-h-screen flex flex-col justify-center items-center text-center px-margin-mobile pt-20">
+<div class="max-w-4xl space-y-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container border border-teal-accent/30 text-teal-accent font-label-code text-label-code uppercase tracking-widest animate-pulse-cyan">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-accent opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-teal-accent"></span>
+</span>
+                    Live Threat Intelligence Active
+                </div>
+<h1 class="font-display-lg text-display-lg text-primary max-w-3xl mx-auto">
+                    Detect Malware <span class="text-primary-fixed-dim">Before It Strikes</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                    AI-powered static malware analysis for the next generation of security. Identify sophisticated threats with clinical precision in milliseconds.
+                </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
+<button class="w-full sm:w-auto bg-primary-fixed-dim text-on-primary-fixed px-8 py-4 rounded-lg font-title-md text-title-md flex items-center justify-center gap-2 glow-cyan hover:scale-[1.02] active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined" data-icon="upload_file">upload_file</span>
+                        Scan File
+                    </button>
+<button class="w-full sm:w-auto bg-transparent border border-outline text-on-surface px-8 py-4 rounded-lg font-title-md text-title-md flex items-center justify-center gap-2 hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                        View Dashboard
+                    </button>
+</div>
+</div>
+<!-- Dashboard Preview / Bento Elements -->
+<div class="mt-20 w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="glass-card p-6 rounded-xl border-l-4 border-l-teal-accent">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-code text-label-code text-on-surface-variant uppercase">Threat Level</span>
+<span class="text-status-malware font-bold text-title-md">CRITICAL</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-status-malware w-[92%]"></div>
+</div>
+<p class="mt-4 font-body-md text-body-md text-on-surface-variant">Suspicious entropy detected in section .text</p>
+</div>
+<div class="glass-card p-6 rounded-xl border-l-4 border-l-status-benign">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-code text-label-code text-on-surface-variant uppercase">Analysis Queue</span>
+<span class="text-status-benign font-bold text-title-md">0.004s</span>
+</div>
+<div class="flex gap-1">
+<div class="h-8 w-1 bg-status-benign/30 rounded"></div>
+<div class="h-10 w-1 bg-status-benign/50 rounded"></div>
+<div class="h-6 w-1 bg-status-benign rounded"></div>
+<div class="h-12 w-1 bg-status-benign rounded"></div>
+<div class="h-8 w-1 bg-status-benign/60 rounded"></div>
+</div>
+<p class="mt-4 font-body-md text-body-md text-on-surface-variant">Real-time processing active</p>
+</div>
+<div class="glass-card p-6 rounded-xl border-l-4 border-l-primary-fixed-dim">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-code text-label-code text-on-surface-variant uppercase">AI Confidence</span>
+<span class="text-primary-fixed-dim font-bold text-title-md">99.8%</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-4xl text-primary-fixed-dim" data-icon="neurology" style="font-variation-settings: 'FILL' 1;">neurology</span>
+<div class="text-left">
+<div class="text-on-surface font-bold">Neural Model v4.2</div>
+<div class="text-on-surface-variant text-xs">Updated 2m ago</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="py-24 px-margin-mobile bg-surface-container-lowest/50">
+<div class="max-w-6xl mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-4">Defensive Intelligence Architecture</h2>
+<p class="text-on-surface-variant max-w-xl mx-auto">Engineered for security teams that cannot afford a single false negative.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- AI Detection -->
+<div class="glass-card p-8 rounded-2xl group hover:border-teal-accent/50 transition-colors scanline-hover">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6 text-teal-accent">
+<span class="material-symbols-outlined text-3xl" data-icon="psychology">psychology</span>
+</div>
+<h3 class="font-title-md text-title-md text-primary mb-3">AI Detection</h3>
+<p class="text-on-surface-variant">Our proprietary neural network identifies metamorphic malware patterns that bypass traditional signature-based scanners by analyzing structural intent rather than static code.</p>
+</div>
+<!-- Static File Analysis -->
+<div class="glass-card p-8 rounded-2xl group hover:border-teal-accent/50 transition-colors scanline-hover">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6 text-teal-accent">
+<span class="material-symbols-outlined text-3xl" data-icon="code_blocks">code_blocks</span>
+</div>
+<h3 class="font-title-md text-title-md text-primary mb-3">Static File Analysis</h3>
+<p class="text-on-surface-variant">Deep inspection of portable executables (PE), ELF, and Mach-O files without execution. Identify obfuscation techniques, packed sections, and malicious imports safely.</p>
+</div>
+<!-- Threat Confidence Score -->
+<div class="glass-card p-8 rounded-2xl group hover:border-teal-accent/50 transition-colors scanline-hover">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6 text-teal-accent">
+<span class="material-symbols-outlined text-3xl" data-icon="monitoring">monitoring</span>
+</div>
+<h3 class="font-title-md text-title-md text-primary mb-3">Threat Confidence Score</h3>
+<p class="text-on-surface-variant">Receive a granular risk metric based on a combination of heuristic rules, behavioral prediction, and historical threat actor data correlations.</p>
+</div>
+<!-- Secure & Private -->
+<div class="glass-card p-8 rounded-2xl group hover:border-teal-accent/50 transition-colors scanline-hover">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6 text-teal-accent">
+<span class="material-symbols-outlined text-3xl" data-icon="lock">lock</span>
+</div>
+<h3 class="font-title-md text-title-md text-primary mb-3">Secure &amp; Private</h3>
+<p class="text-on-surface-variant">Enterprise-grade privacy. All analyzed metadata is scrubbed, and files are never stored in plain text. Full on-premise deployment options for high-security environments.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section class="py-24 px-margin-mobile">
+<div class="max-w-6xl mx-auto text-center">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-16">Three Steps to Total Visibility</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+<!-- Connecting Line -->
+<div class="hidden md:block absolute top-12 left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-outline-variant to-transparent z-0"></div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-20 h-20 rounded-full bg-surface-elevated border-2 border-primary-fixed-dim flex items-center justify-center text-primary-fixed-dim mb-6 text-3xl font-bold font-title-md">1</div>
+<h4 class="font-title-md text-title-md text-primary mb-2">Ingest</h4>
+<p class="text-on-surface-variant">Upload any binary or source file through our secure portal or API endpoint.</p>
+</div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-20 h-20 rounded-full bg-surface-elevated border-2 border-primary-fixed-dim flex items-center justify-center text-primary-fixed-dim mb-6 text-3xl font-bold font-title-md">2</div>
+<h4 class="font-title-md text-title-md text-primary mb-2">Analyze</h4>
+<p class="text-on-surface-variant">Our engine performs multi-layered static extraction and AI modeling in parallel.</p>
+</div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-20 h-20 rounded-full bg-surface-elevated border-2 border-primary-fixed-dim flex items-center justify-center text-primary-fixed-dim mb-6 text-3xl font-bold font-title-md">3</div>
+<h4 class="font-title-md text-title-md text-primary mb-2">Resolve</h4>
+<p class="text-on-surface-variant">Receive a detailed breakdown and automated mitigation recommendations.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-20 px-margin-mobile">
+<div class="max-w-5xl mx-auto glass-card rounded-3xl p-12 text-center border-t-2 border-t-teal-accent/20">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-6">Ready to fortify your perimeter?</h2>
+<p class="text-on-surface-variant mb-10 max-w-2xl mx-auto">Join 500+ security teams using MalScan for automated threat hunting and file integrity verification.</p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center">
+<button class="bg-primary-fixed-dim text-on-primary-fixed px-10 py-4 rounded-lg font-title-md text-title-md glow-cyan hover:scale-[1.02] transition-transform">Start Free Scan</button>
+<button class="text-primary px-10 py-4 rounded-lg font-title-md text-title-md border border-outline hover:bg-surface-container transition-colors">Request Enterprise Demo</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Shell -->
+<footer class="w-full py-12 bg-surface-container-lowest border-t border-outline-variant relative z-10">
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop gap-8">
+<div class="flex items-center gap-3">
+<img alt="MalScan Logo Footer" class="w-6 h-6 grayscale opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtQKg3v_hL39YfehUUUx9Ism9AP91_qrCmxNOkvip89KkAFXczzxaN48wGUgiWjO8Wz9lp2FNpep_VfKcL_110m6Y1XcTVSDk116XZ4Ed94jVZLdOOx6GLTs892YNKL74dV6iF5ZATVD5esHqO8bnBEAQonuWzoYmRcA8iSf7fzCzc0Qoedvv-_o8TSbsIbm6iO7rshANLYFmb-aAhDsIJ9NkcQBe9dGDDtorIueVzsL2Nw3H_rds1zRwMBRz66A6yIbBmX0l5NLE"/>
+<span class="font-label-code text-primary">MalScan Defensive Intelligence</span>
+</div>
+<div class="flex gap-8">
+<a class="font-label-code text-label-code text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-code text-label-code text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-code text-label-code text-on-surface-variant hover:text-primary transition-colors" href="#">Security Disclosure</a>
+</div>
+<div class="font-label-code text-label-code text-on-surface-variant/60">
+                © 2024 MalScan Defensive Intelligence
+            </div>
+</div>
+</footer>
+<script>
+        // Micro-interaction for the "Scan File" button
+        const scanBtn = document.querySelector('button');
+        if(scanBtn) {
+            scanBtn.addEventListener('mousedown', () => {
+                scanBtn.style.transform = 'scale(0.98)';
+            });
+            scanBtn.addEventListener('mouseup', () => {
+                scanBtn.style.transform = 'scale(1)';
+            });
+        }
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('bg-surface-dim/95', 'shadow-lg');
+            } else {
+                header.classList.remove('bg-surface-dim/95', 'shadow-lg');
+            }
+        });
+    </script>
+</body></html>

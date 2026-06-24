@@ -41,7 +41,9 @@ export const FileUpload = ({ onFileSelect, selectedFile }) => {
 
   return (
     <div
-      className={`file-upload-container ${isDragOver ? 'drag-over' : ''} ${selectedFile ? 'has-file' : ''}`}
+      className={`group relative overflow-hidden bg-surface-container-lowest border rounded-xl p-8 flex flex-col items-center justify-center min-h-[300px] transition-all cursor-pointer ${
+        isDragOver ? 'border-primary-fixed bg-surface-container' : 'border-outline-variant hover:border-primary-fixed-dim/50'
+      }`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -54,22 +56,30 @@ export const FileUpload = ({ onFileSelect, selectedFile }) => {
         style={{ display: 'none' }}
         accept=".exe,.dll,.sys,.scr,.ocx" 
       />
-      <div className="upload-icon">
-        {selectedFile ? '📄' : '📁'}
+      <div className="relative z-10 flex flex-col items-center text-center">
+        <div className="w-20 h-20 bg-surface-container-high rounded-full flex items-center justify-center mb-6 border border-outline-variant group-hover:border-primary-fixed transition-colors">
+          <span className="material-symbols-outlined text-[40px] text-primary-fixed-dim select-none" style={{ fontVariationSettings: "'FILL' 0" }}>cloud_upload</span>
+        </div>
+        {selectedFile ? (
+          <div className="flex flex-col items-center gap-2">
+            <h3 className="font-title-md text-title-md mb-2 text-primary font-bold">{selectedFile.name}</h3>
+            <span className="bg-primary text-background font-label-code text-[11px] px-2.5 py-1 rounded font-bold uppercase select-none">{formatBytes(selectedFile.size)}</span>
+            <p className="text-[12px] text-on-surface-variant font-mono mt-4">Click or drag another file to replace</p>
+          </div>
+        ) : (
+          <>
+            <h3 className="font-title-md text-title-md mb-2 text-on-surface">Drag &amp; Drop Binary</h3>
+            <p className="text-on-surface-variant mb-4 max-w-sm text-body-md">
+              Support for <span className="font-label-code text-primary">.exe</span>, <span className="font-label-code text-primary">.dll</span>, and <span className="font-label-code text-primary">.sys</span> up to 50MB.
+            </p>
+            <div className="flex items-center gap-4">
+              <span className="border border-outline hover:bg-surface-container-high text-on-surface py-2 px-6 rounded font-bold transition-all text-body-md select-none">
+                BROWSE FILES
+              </span>
+            </div>
+          </>
+        )}
       </div>
-      {selectedFile ? (
-        <div className="file-details">
-          <p className="file-name">{selectedFile.name}</p>
-          <span className="file-size-badge">{formatBytes(selectedFile.size)}</span>
-          <p className="upload-tip-active">Click or Drag another file to replace</p>
-        </div>
-      ) : (
-        <div className="upload-prompt">
-          <p className="upload-title">Drag & Drop PE Binary Here</p>
-          <p className="upload-subtitle">or click to browse your workspace</p>
-          <span className="upload-supported">Target Formats: .exe, .dll, .sys</span>
-        </div>
-      )}
     </div>
   );
 };
