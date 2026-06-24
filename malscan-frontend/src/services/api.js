@@ -31,7 +31,7 @@ const handleApiError = (error) => {
   } else if (error.request) {
     return {
       status: 0,
-      message: 'MalScan backend is currently unreachable. Ensure uvicorn is running on localhost:8000.',
+      message: `MalScan backend is currently unreachable at ${API_BASE_URL}. Ensure the backend service is active and running.`,
     };
   } else {
     return {
